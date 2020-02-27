@@ -1,0 +1,1 @@
+Source code to my article [Distributed XA Transactions in a Spring Boot / Camel Application](https://medium.com/@forketyfork/distributed-xa-transactions-in-a-spring-boot-camel-application-230655b2ae89)
