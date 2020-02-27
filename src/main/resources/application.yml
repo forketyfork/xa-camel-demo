@@ -1,0 +1,44 @@
+spring:
+  activemq:
+    # we'll use an external ActiveMQ broker
+    broker-url: tcp://localhost:61616
+  datasource:
+    # we'll use an external PostgreSQL database
+    url: jdbc:postgresql://localhost:5432/xatest
+    xa:
+      # this is needed to make sure the PostgreSQL data source is XA-aware
+      data-source-class-name: org.postgresql.xa.PGXADataSource
+    username: postgres
+    password: postgres
+    # this is required to always execute schema.sql file on application start
+    # (replace with database migrations for production)
+    initialization-mode: always
+  jta:
+    atomikos:
+      connectionfactory:
+        # allow to set transacted flag on a session level;
+        # set it to true if you don't want any local transactions at all
+        ignore-session-transacted-flag: false
+        # just a name of ActiveMQ broker as an XA resource, for convenience
+        unique-resource-name: xa.amq
+        min-pool-size: 10
+        max-pool-size: 20
+      datasource:
+        # just a name of PostgreSQL database as an XA resource, for convenience
+        unique-resource-name: xa.db
+        # Atomikos does its own connection pooling, don't use any other connection pool library!
+        min-pool-size: 10
+        max-pool-size: 20
+        # specifying a test query for your database is important,
+        # otherwise, Atomikos connection pool won't be able to
+        # health-check the connections, which will lead to failure
+        # during connection recovery
+        test-query: "select 1"
+      properties:
+        # a default timeout for an XA transaction (5 minutes)
+        default-jta-timeout: 300000
+
+logging:
+  level:
+    # just for convenience, we'll log the transaction prepare/commit/rollback process
+    com.atomikos.datasource.xa.XAResourceTransaction: DEBUG
