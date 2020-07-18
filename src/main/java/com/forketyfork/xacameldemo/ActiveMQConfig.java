@@ -1,20 +1,19 @@
 package com.forketyfork.xacameldemo;
 
+import javax.jms.ConnectionFactory;
 import org.apache.activemq.RedeliveryPolicy;
-import org.apache.activemq.camel.component.ActiveMQComponent;
+import org.apache.camel.component.activemq.ActiveMQComponent;
 import org.springframework.boot.autoconfigure.jms.JmsProperties;
 import org.springframework.boot.autoconfigure.jms.activemq.ActiveMQConnectionFactoryCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.jta.JtaTransactionManager;
 
-import javax.jms.ConnectionFactory;
-
 @Configuration
 public class ActiveMQConfig {
 
-    @Bean("activemq")
-    public ActiveMQComponent activeMq(
+    @Bean
+    public ActiveMQComponent activemq(
             ConnectionFactory connectionFactory,
             JtaTransactionManager jtaTransactionManager) {
         ActiveMQComponent component = new ActiveMQComponent();

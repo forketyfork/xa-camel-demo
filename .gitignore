@@ -1,3 +1,5 @@
+transaction-logs/
+
 HELP.md
 target/
 !.mvn/wrapper/maven-wrapper.jar
