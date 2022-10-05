@@ -5,30 +5,28 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import javax.jms.ConnectionFactory;
 import javax.sql.DataSource;
-
-import org.apache.camel.*;
-import org.apache.camel.builder.AdviceWithRouteBuilder;
+import org.apache.camel.CamelContext;
+import org.apache.camel.builder.AdviceWith;
 import org.apache.camel.builder.NotifyBuilder;
-import org.apache.camel.test.spring.CamelSpringBootRunner;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.apache.camel.test.spring.junit5.CamelSpringBootTest;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionSynchronizationAdapter;
+import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@RunWith(CamelSpringBootRunner.class)
+@CamelSpringBootTest
 @SpringBootTest
-public class XaRouteTest {
+class XaRouteTest {
 
     @Autowired
     private DataSource dataSource;
@@ -44,7 +42,7 @@ public class XaRouteTest {
 
     private JdbcTemplate jdbcTemplate;
 
-    @Before
+    @BeforeEach
     public void setup() {
         jmsTemplate = new JmsTemplate();
         jmsTemplate.setConnectionFactory(jmsConnectionFactory);
@@ -54,7 +52,7 @@ public class XaRouteTest {
     }
 
     @Test
-    public void testFailure() {
+    void testFailure() {
 
         NotifyBuilder notify = new NotifyBuilder(camelContext)
                 .fromRoute("queueRoute")
@@ -74,8 +72,8 @@ public class XaRouteTest {
     // when NotifyBuilder reports route completion
     @Test
     @Transactional
-    @Ignore
-    public void testSuccessWrong() {
+    @Disabled
+    void testSuccessWrong() {
 
         NotifyBuilder notify = new NotifyBuilder(camelContext)
                 .fromRoute("queueRoute")
@@ -94,8 +92,9 @@ public class XaRouteTest {
     }
 
     @Test
-    @Transactional // you can also omit the @Transactional annotation here
-    public void testSuccessRight() throws Exception {
+    @Transactional
+        // you can also omit the @Transactional annotation here
+    void testSuccessRight() throws Exception {
 
         NotifyBuilder notify = new NotifyBuilder(camelContext)
                 .fromRoute("queueRoute")
@@ -106,11 +105,11 @@ public class XaRouteTest {
         CountDownLatch transactionLatch = new CountDownLatch(1);
 
         // adding a node as the first node of the route
-        AdviceWithRouteBuilder.adviceWith(camelContext, "queueRoute", context ->
+        AdviceWith.adviceWith(camelContext, "queueRoute", context ->
                 context.weaveAddFirst().process(exchange ->
                         // adding transaction synchronization
                         TransactionSynchronizationManager.registerSynchronization(
-                                new TransactionSynchronizationAdapter() {
+                                new TransactionSynchronization() {
                                     @Override
                                     public void afterCommit() {
                                         // when the transaction is finished, count down the latch

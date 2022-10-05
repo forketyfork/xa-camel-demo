@@ -10,9 +10,11 @@ spring:
       data-source-class-name: org.postgresql.xa.PGXADataSource
     username: postgres
     password: postgres
-    # this is required to always execute schema.sql file on application start
-    # (replace with database migrations for production)
-    initialization-mode: always
+  # this is required to always execute schema.sql file on application start
+  # (replace with database migrations for production)
+  sql:
+    init:
+      mode: always
   jta:
     atomikos:
       connectionfactory:
