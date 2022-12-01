@@ -1,0 +1,9 @@
+schemaVersion: 2.2.0
+attributes:
+  space:
+    editor:
+      type: IDEA
+      # the config appends to the default .vmoptions
+      vmoptions:
+      - '-Xms2048m'
+      - '-Xmx6096m'
