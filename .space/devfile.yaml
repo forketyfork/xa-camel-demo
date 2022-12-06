@@ -2,4 +2,4 @@ schemaVersion: 2.2.0
 attributes:
     space:
         editor:
-		    type: Idea
+            type: Idea
