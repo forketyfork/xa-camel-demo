@@ -1,38 +1,28 @@
 package com.forketyfork.xacameldemo;
 
-import javax.jms.ConnectionFactory;
-import org.apache.activemq.RedeliveryPolicy;
+import jakarta.jms.ConnectionFactory;
 import org.apache.camel.component.activemq.ActiveMQComponent;
-import org.springframework.boot.autoconfigure.jms.JmsProperties;
-import org.springframework.boot.autoconfigure.jms.activemq.ActiveMQConnectionFactoryCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.transaction.jta.JtaTransactionManager;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.jms.connection.JmsTransactionManager;
 
 @Configuration
 public class ActiveMQConfig {
 
     @Bean
     public ActiveMQComponent activemq(
-            ConnectionFactory connectionFactory,
-            JtaTransactionManager jtaTransactionManager) {
+            ConnectionFactory connectionFactory) {
         ActiveMQComponent component = new ActiveMQComponent();
-        component.setAcknowledgementMode(JmsProperties.AcknowledgeMode.CLIENT.getMode());
+        component.setAcknowledgementMode(jakarta.jms.Session.CLIENT_ACKNOWLEDGE);
         component.setCacheLevelName("CACHE_CONSUMER");
         component.setConnectionFactory(connectionFactory);
         component.setTransacted(true);
-        component.setTransactionManager(jtaTransactionManager);
         return component;
     }
 
     @Bean
-    public ActiveMQConnectionFactoryCustomizer activeMQConnectionFactoryCustomizer() {
-        return factory -> {
-            RedeliveryPolicy policy = new RedeliveryPolicy();
-            policy.setRedeliveryDelay(1000);
-            policy.setMaximumRedeliveries(2);
-            factory.setRedeliveryPolicy(policy);
-        };
+    public PlatformTransactionManager jmsTransactionManager(ConnectionFactory connectionFactory) {
+        return new JmsTransactionManager(connectionFactory);
     }
-
 }
