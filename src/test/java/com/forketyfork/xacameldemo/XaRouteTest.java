@@ -3,7 +3,7 @@ package com.forketyfork.xacameldemo;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-import javax.jms.ConnectionFactory;
+import jakarta.jms.ConnectionFactory;
 import javax.sql.DataSource;
 import org.apache.camel.CamelContext;
 import org.apache.camel.builder.AdviceWith;
