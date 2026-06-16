@@ -34,3 +34,7 @@ build/
 
 ### vim
 *~
+
+### Agents
+.tmp/
+.architect/
